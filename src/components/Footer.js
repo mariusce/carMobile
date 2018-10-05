@@ -18,20 +18,16 @@ class _Footer extends Component {
         <Footer>
           <FooterTab>
             <Button vertical>
-                <Icon name="list" />
-                <Text>Apps</Text>
+                <Icon name="home" />
+                <Text>Home</Text>
             </Button>
             <Button vertical>
-                <Icon name="camera" />
-                <Text>Camera</Text>
+                <Icon name="users" />
+                <Text>Contacts</Text>
             </Button>
             <Button vertical active>
-                <Icon active name="compass" />
-                <Text>Navigate</Text>
-            </Button>
-            <Button vertical>
-                <Icon name="user" />
-                <Text>Contact</Text>
+                <Icon active name="message-square" />
+                <Text>Messages</Text>
             </Button>
             </FooterTab>
           </Footer>

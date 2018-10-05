@@ -27,27 +27,7 @@ class Home extends Component {
       <Container>
         <Header showBack={false} {...this.props} title={this.props.headerTitle}/>
         <Content contentContainerStyle={styles.content}>
-          <View style={styles.row}>
-            <Button style={styles.button} onPress={this._onPressMyPlanButton}>
-              <Icon style={styles.icon} name="home"/>
-              <Text style={styles.buttonText}>My Plans</Text>
-            </Button>
-            <Button style={styles.button} onPress={this._onPressAgentsButton}>
-              {/*<Icon style={styles.icon} name="users"/>*/}
-              <Text style={styles.buttonText}>Agents</Text>
-            </Button>
-          </View>
-
-          <View style={styles.row}>
-            <Button style={styles.button} onPress={this._onPressSettingsButton}>
-              {/*<Icon style={styles.icon} name="settings"/>*/}
-              <Text style={styles.buttonText}>Settings</Text></Button>
-            <Button style={styles.button}>
-              {/*<Icon style={styles.icon} name="credit-card"/>*/}
-              <Text style={styles.buttonText}>Claims</Text>
-            </Button>
-
-          </View>
+          
         </Content>
         <Footer/>
       </Container>
