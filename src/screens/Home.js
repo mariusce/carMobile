@@ -17,7 +17,7 @@ class Home extends Component {
     let iconSize = 80;
     return (
       <Container>
-        <Header showBack={false} {...this.props} title={this.props.headerTitle}/>
+        <Header {...this.props} title={this.props.headerTitle}/>
         <Content contentContainerStyle={styles.content}>
 
         </Content>
