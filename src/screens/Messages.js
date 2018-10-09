@@ -1,39 +1,35 @@
 import React, {Component} from 'react';
 import {StyleSheet, Image} from 'react-native';
-import {Container, Content, View, Text, Flatlist, StyleProvider, Icon, Button, Badge,} from "native-base";
+import {Container, Content, View, Text, Flatlist, StyleProvider, Icon, Button,} from "native-base";
 import {connect} from 'react-redux';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PropTypes from "prop-types";
 
 
-class Home extends Component {
-
-  _onPressGoToContacts = () => {
-    this.props.navigation.navigate('Contacts');
-  };
+class Messages extends Component {
 
   render() {
     let iconSize = 80;
     return (
       <Container>
-        <Header showBack={false} {...this.props} title={this.props.headerTitle}/>
+        <Header showBack={true} {...this.props} title={this.props.headerTitle}/>
         <Content contentContainerStyle={styles.content}>
 
         </Content>
-        <Footer active="home" {...this.props} />
+        <Footer active="messages" {...this.props}/>
       </Container>
     );
   }
 }
 
 
-Home.propTypes = {
+Messages.propTypes = {
   headerTitle: PropTypes.string,
 };
 
-Home.defaultProps = {
-  headerTitle: 'Home'
+Messages.defaultProps = {
+  headerTitle: 'Messages'
 };
 
 const styles = StyleSheet.create({
@@ -47,4 +43,4 @@ function mapStateToProps(state) {
   return {};
 }
 
-export default connect(mapStateToProps)(Home);
+export default connect(mapStateToProps)(Messages);

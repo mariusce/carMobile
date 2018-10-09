@@ -3,13 +3,15 @@ import {createStackNavigator} from "react-navigation";
 import {Root, StyleProvider} from "native-base";
 import getTheme from '../native-base-theme/components';
 import platform from '../native-base-theme/variables/platform';
-import Home from './screens/Home';
 import Welcome from './screens/Welcome';
 import Register from './screens/Register';
 import Login from './screens/Login';
 import Loading from './screens/Loading';
 import CodeValidation from './screens/CodeValidation';
 import PhoneInput from './screens/PhoneInput';
+import Home from './screens/Home';
+import Contacts from './screens/Contacts';
+import Messages from './screens/Messages';
 
 
 import configureStore from './store/configureStore';
@@ -17,17 +19,19 @@ import {Provider} from 'react-redux';
 
 const AppNavigator = createStackNavigator(
     {
-        Home: {screen: Home},
-        Welcome: {screen: Welcome},
-        Register: {screen: Register},
-        Login: {screen: Login},
-        CodeValidation: {screen: CodeValidation},
-        Loading: {screen: Loading},
-        PhoneInput: {screen: PhoneInput}
+      Welcome: {screen: Welcome},
+      Register: {screen: Register},
+      Login: {screen: Login},
+      CodeValidation: {screen: CodeValidation},
+      Loading: {screen: Loading},
+      PhoneInput: {screen: PhoneInput},
+      Home: {screen: Home},
+      Contacts: {screen: Contacts},
+      Messages: {screen: Messages},
     },
     {
-        initialRouteName: "Loading",
-        headerMode: "none"
+      initialRouteName: "Loading",
+      headerMode: "none"
     }
 );
 

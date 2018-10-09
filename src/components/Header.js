@@ -14,10 +14,6 @@ class _Header extends Component {
     super(props);
   }
 
-  _onPressBackButton = () => {
-    this.props.navigation.goBack();
-  };
-
   _onPressLogoutButton = () => {
     this.props.dispatch(flushState());
     resetAndNavigateTo(this.props, 'Welcome');
@@ -27,15 +23,8 @@ class _Header extends Component {
     return (
       <StyleProvider style={getTheme(platform)}>
         <Header>
-          <Left style={{flexDirection: 'row', alignItems: 'center'}}>
-            {this.props.showBack &&
-            <Button onPress={this._onPressBackButton}>
-              <Icon type="Feather" name="arrow-left"/>
-            </Button>
-            }
-          </Left>
-          <Body>
-          <Title style={styles.title}>{this.props.title}</Title>
+          <Body style={styles.title}>
+            <Title >{this.props.title}</Title>
           </Body>
           <Right>
             {this.props.showLogout &&
@@ -63,9 +52,9 @@ _Header.defaultProps = {
 
 const styles = StyleSheet.create({
   title: {
-    color: '#ffffff',
-    textAlign: 'center',
+    flex: 1,
     justifyContent: 'center',
+    alignItems:     'center'
   }
 });
 
