@@ -11,7 +11,7 @@ export default class Welcome extends Component {
       <Container>
         <Content contentContainerStyle={styles.content}>
 
-          <View style={{justifyContent:'center', alignItems: 'center'}}><Image source={require('../../assets/image/car-logo.png')}/></View>
+          <View style={styles.logo}><Image source={require('../../assets/image/car-logo.png')}/></View>
 
           <Button full style={styles.button} onPress={() => {
             this.props.navigation.navigate('Login')
@@ -46,6 +46,11 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'center',
+  },
+  logo: {
+    justifyContent:'center',
+    alignItems: 'center',
+    paddingBottom: 50
   },
   button: {
     margin: 10

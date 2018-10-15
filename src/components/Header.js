@@ -7,6 +7,7 @@ import getTheme from '../../native-base-theme/components';
 import {connect} from "react-redux";
 import {flushState} from "../actions/global";
 import {logout} from '../actions/authentication';
+import Feather from 'react-native-vector-icons/Feather';
 
 
 class _Header extends Component {
@@ -31,7 +32,7 @@ class _Header extends Component {
           <Left style={styles.left}>
             {this.props.showBack &&
             <Button onPress={this._onPressBackButton} transparent>
-              <Icon name='arrow-left'/>
+              <Feather name='arrow-left' color='#f0edf6' size={20}/>
             </Button>
             }
           </Left>
@@ -41,7 +42,7 @@ class _Header extends Component {
           <Right>
             {this.props.showLogout &&
               <Button onPress={this._onPressLogoutButton} transparent>
-                <Icon name='power'/>
+                <Feather name='power' color='#f0edf6' size={20}/>
               </Button>
             }
           </Right>

@@ -17,6 +17,7 @@ import {Provider} from 'react-redux';
 import Home from './screens/Home';
 import Contacts from './screens/Contacts';
 import Messages from './screens/Messages';
+import Feather from 'react-native-vector-icons/Feather';
 
 const AuthStack = createStackNavigator(
     {
@@ -39,8 +40,31 @@ const AppNavigator = createMaterialBottomTabNavigator({
 }, {
   initialRouteName: 'Home',
   activeColor: '#f0edf6',
-  inactiveColor: '#3e2465',
-  barStyle: { backgroundColor: '#694fad' },
+  inactiveColor: '#92c5c1',
+  shifting: true,
+  barStyle: { backgroundColor: '#186d6a' },
+  navigationOptions: ({ navigation }) => ({
+    tabBarIcon: ({ focused, horizontal, tintColor }) => {
+      const { routeName } = navigation.state;
+      let iconName = 'home';
+      switch (routeName) {
+        case 'Home':
+          iconName = 'home';
+          break;
+        case 'Contacts':
+          iconName = 'users';
+          break;
+        case 'Messages':
+          iconName = 'message-square';
+          break;
+      }
+      return <Feather name={iconName} size={horizontal ? 20 : 25} color={tintColor} />;
+    },
+  }),
+  tabBarOptions: {
+    activeTintColor: '#f0edf6',
+    inactiveTintColor: '#92c5c1',
+  },
 });
 
 
