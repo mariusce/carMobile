@@ -3,7 +3,6 @@ import {StyleSheet, Image} from 'react-native';
 import {Container, Content, View, Text, Flatlist, StyleProvider, Icon, Button,} from "native-base";
 import {connect} from 'react-redux';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
 import PropTypes from "prop-types";
 
 
@@ -17,7 +16,6 @@ class Messages extends Component {
         <Content contentContainerStyle={styles.content}>
 
         </Content>
-        <Footer active="messages" {...this.props}/>
       </Container>
     );
   }

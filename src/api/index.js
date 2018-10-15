@@ -9,11 +9,11 @@ function setSuccess(caller, json) {
   };
 }
 
-function fail(dispatch, message, cb) {
+function fail(dispatch, message, code, cb) {
   dispatch(setLoading(false));
   dispatch(setError(message));
   if (cb) {
-    cb(message, null);
+     return cb(message, code);
   }
   return Promise.reject(message);
 }
@@ -59,9 +59,9 @@ export function callApi(dispatch, getState, method, path, body, caller, cb) {
       });
     }
     return response.json().then(json => {
-      return fail(dispatch, json.message, cb);
+      return fail(dispatch, json.message, json && json.code,  cb);
     }).catch((error) => {
-      return fail(dispatch, error, cb);
+      return fail(dispatch, error, error && error.code, cb);
     });
   }, error => {
     if (error && typeof error === 'object') {
@@ -71,6 +71,6 @@ export function callApi(dispatch, getState, method, path, body, caller, cb) {
         error = JSON.stringify(error);
       }
     }
-    return fail(dispatch, error, cb);
+    return fail(dispatch, error, error && error.code, cb);
   });
 }

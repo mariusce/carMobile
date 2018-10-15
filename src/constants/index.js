@@ -10,3 +10,8 @@ export const SIGN_IN_CONTEXT = 'SIGN_IN_CONTEXT';
 export const SIGN_UP_CONTEXT = 'SIGN_UP_CONTEXT';
 export const AUTHENTICATION_METHOD_PHONE = 'phone';
 export const FLUSH_STATE = 'FLUSH_STATE';
+
+export const SHOW_ERROR = true;
+
+// eslint-disable-next-line
+export const EMAIL_REGEX = /^\w+([\.\-\!\#\$\%\&\‘\*\+\/\=\?\^\`\{\|\}\~]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/

@@ -4,7 +4,6 @@ import {Content, Spinner, StyleProvider} from 'native-base';
 import Container from '../components/Container';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
-import {resetAndNavigateTo} from "../helpers/navigation";
 
 import {TOKEN_NOT_SET} from '../constants';
 
@@ -17,9 +16,9 @@ class Loading extends Component {
   componentDidMount() {
     if (this.props.isInitDone) {
       if (TOKEN_NOT_SET === this.props.token) {
-        resetAndNavigateTo(this.props, 'Welcome');
+        this.props.navigation.navigate('Auth');
       } else {
-        resetAndNavigateTo(this.props, 'Home');
+        this.props.navigation.navigate('App');
       }
     }
   }
@@ -27,9 +26,9 @@ class Loading extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.isInitDone) {
       if (TOKEN_NOT_SET === nextProps.token) {
-        resetAndNavigateTo(this.props, 'Welcome');
+        this.props.navigation.navigate('Auth');
       } else {
-        resetAndNavigateTo(this.props, 'Home');
+        this.props.navigation.navigate('App');
       }
     }
   }

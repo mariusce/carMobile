@@ -1,6 +1,9 @@
+import {LOGOUT} from './authentication';
+
 export const INIT_DONE = 'persist/REHYDRATE';
 export const SET_LOADING = 'SET_LOADING';
 export const SET_ERROR = 'SET_ERROR';
+export const LOGOUT = 'SET_ERROR';
 import {FLUSH_STATE} from "../constants";
 
 
@@ -22,5 +25,12 @@ export function flushState() {
   return {
     type: FLUSH_STATE,
     value: null
+  };
+}
+
+export function logout() {
+  return {
+    type: LOGOUT,
+    value: true
   };
 }

@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import {StyleSheet} from 'react-native';
-import {Content, Button, Text, Item, Input, Label, StyleProvider} from 'native-base';
+import {Content, Button, Text, Item, Input, Label, StyleProvider, Toast} from 'native-base';
 import Container from '../components/Container';
 import PropTypes from 'prop-types';
 import {sendAuthenticationCode} from '../actions/authentication';
 import {onChangeTextInput} from '../helpers/input';
 import {connect} from "react-redux";
 import Header from "../components/Header";
+import {errorCodeToText} from '../helpers/utils';
 
 class PhoneInput extends Component {
 
@@ -21,6 +22,12 @@ class PhoneInput extends Component {
     this.props.dispatch(sendAuthenticationCode(phone, false, (error, json) => {
       if (!error) {
         this.props.navigation.navigate('CodeValidation', {phone: phone});
+      } else {
+        Toast.show({
+          text: errorCodeToText(json),
+          buttonText: "Okay",
+          type: "danger"
+        });
       }
     }));
   };

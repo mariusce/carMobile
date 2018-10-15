@@ -1,17 +1,17 @@
 import React, {Component} from 'react';
 import {StyleSheet, Image} from 'react-native';
-import {Container, Content, View, Text, Flatlist, StyleProvider, Icon, Button, Badge,} from "native-base";
+import {Container, Content, View, Text, Flatlist, StyleProvider, Icon, Button, Badge, Thumbnail,} from "native-base";
 import {connect} from 'react-redux';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
 import PropTypes from "prop-types";
+import {getAuthenticatedUser} from '../actions/authentication';
 
 
 class Home extends Component {
 
-  _onPressGoToContacts = () => {
-    this.props.navigation.navigate('Contacts');
-  };
+  componentDidMount() {
+    this.props.dispatch(getAuthenticatedUser());
+  }
 
   render() {
     let iconSize = 80;
@@ -19,32 +19,66 @@ class Home extends Component {
       <Container>
         <Header {...this.props} title={this.props.headerTitle}/>
         <Content contentContainerStyle={styles.content}>
-
+          <View style={styles.image}>
+            <Thumbnail large source={{uri: 'https://picsum.photos/200/300/?image=1005'}} />
+          </View>
+          <View style={styles.details}>
+            <Text >License plate</Text>
+            <Text style={styles.propertyText}>{this.props.user.carNumber}</Text>
+            <Text/><Text/>
+            <Text >Full name</Text>
+            <Text style={styles.propertyText}>{this.props.user.firstName} {this.props.user.lastName}</Text>
+            <Text/><Text/>
+            <Text >Email</Text>
+            <Text style={styles.propertyText}>{this.props.user.email}</Text>
+            <Text/><Text/>
+            <Text >Phone</Text>
+            <Text style={styles.propertyText}>{this.props.user.phone}</Text>
+          </View>
         </Content>
-        <Footer active="home" {...this.props} />
       </Container>
     );
   }
 }
 
-
 Home.propTypes = {
   headerTitle: PropTypes.string,
+  user: PropTypes.object,
+  isFetching: PropTypes.bool,
 };
 
 Home.defaultProps = {
-  headerTitle: 'Home'
+  headerTitle: 'Home',
+  user: {},
+  isFetching: false,
 };
 
 const styles = StyleSheet.create({
   content: {
     flex: 1,
     margin: 10,
+  },
+  image: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  details: {
+    flex: 3,
+    margin: 20
+  },
+  propertyText: {
+    fontWeight: 'bold'
   }
 });
 
 function mapStateToProps(state) {
-  return {};
+  const data = state.authentication && state.authentication.user;
+  const isFetching = state.authentication && state.authentication.isFetching;
+  return {
+    user: data || {},
+    isFetching: isFetching
+  };
 }
 
 export default connect(mapStateToProps)(Home);

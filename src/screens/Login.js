@@ -1,19 +1,23 @@
 import React, {Component} from 'react';
 import {StyleSheet} from 'react-native';
-import {Content, Button, Text, Item, Input, Label, StyleProvider} from 'native-base';
+import {Content, Button, Text, Item, Input, Label, StyleProvider, Toast} from 'native-base';
 import Container from '../components/Container';
 import PropTypes from 'prop-types';
 import {onChangeTextInput} from '../helpers/input';
 import {login} from '../actions/authentication'
 import {connect} from "react-redux";
-import {resetAndNavigateTo} from "../helpers/navigation";
+import {errorCodeToText} from '../helpers/utils';
 
 
 class Login extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {carNumber: '', password: ''};
+    this.state = {
+      carNumber: '',
+      password: '',
+      showToast: false
+    };
     this._onChangeTextInput = onChangeTextInput.bind(this);
   }
 
@@ -25,7 +29,13 @@ class Login extends Component {
     };
     this.props.dispatch(login(data, (error, json) => {
       if (!error) {
-        resetAndNavigateTo(this.props, 'Home');
+        this.props.navigation.navigate('App');
+      } else {
+        Toast.show({
+          text: errorCodeToText(json),
+          buttonText: "Okay",
+          type: "danger"
+        });
       }
     }));
   };

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet} from 'react-native';
-import {Content, Button, Text, Item, Input, Label, StyleProvider} from 'native-base';
+import {Content, Button, Text, Item, Input, Label, StyleProvider, Toast} from 'native-base';
 import Container from '../components/Container';
 import PropTypes from 'prop-types';
 import {login} from '../actions/authentication'
@@ -8,7 +8,7 @@ import {AUTHENTICATION_METHOD_PHONE} from '../constants'
 import {connect} from "react-redux";
 import {onChangeTextInput} from '../helpers/input';
 import Header from '../components/Header';
-import {resetAndNavigateTo} from '../helpers/navigation';
+import {errorCodeToText} from '../helpers/utils';
 
 class CodeValidation extends Component {
 
@@ -30,6 +30,12 @@ class CodeValidation extends Component {
     this.props.dispatch(login(data, (error, json) => {
       if (!error) {
         this.props.navigation.navigate('Register');
+      } else {
+        Toast.show({
+          text: errorCodeToText(json),
+          buttonText: "Okay",
+          type: "danger"
+        });
       }
     }));
   };

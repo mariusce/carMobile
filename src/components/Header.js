@@ -5,8 +5,8 @@ import {Header, StyleProvider, Left, Button, Icon, Body, Title, Right, View, Con
 import platform from '../../native-base-theme/variables/platform';
 import getTheme from '../../native-base-theme/components';
 import {connect} from "react-redux";
-import {resetAndNavigateTo} from "../helpers/navigation";
 import {flushState} from "../actions/global";
+import {logout} from '../actions/authentication';
 
 
 class _Header extends Component {
@@ -20,7 +20,8 @@ class _Header extends Component {
 
   _onPressLogoutButton = () => {
     this.props.dispatch(flushState());
-    resetAndNavigateTo(this.props, 'Welcome');
+    this.props.dispatch(logout());
+    this.props.navigation.navigate('Auth');
   };
 
   render() {
