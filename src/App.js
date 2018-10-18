@@ -18,6 +18,7 @@ import Home from './screens/Home';
 import Contacts from './screens/Contacts';
 import Messages from './screens/Messages';
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const AuthStack = createStackNavigator(
     {
@@ -52,18 +53,18 @@ const AppNavigator = createMaterialBottomTabNavigator({
           iconName = 'home';
           break;
         case 'Contacts':
-          iconName = 'users';
+          iconName = 'people';
           break;
         case 'Messages':
-          iconName = 'message-square';
+          iconName = 'forum';
           break;
       }
-      return <Feather name={iconName} size={horizontal ? 20 : 25} color={tintColor} />;
+      return <MaterialIcons name={iconName} size={horizontal ? 20 : 25} color={tintColor} />;
     },
   }),
   tabBarOptions: {
-    activeTintColor: '#f0edf6',
-    inactiveTintColor: '#92c5c1',
+    activeTintColor: platform.activeTintColor,
+    inactiveTintColor: platform.inactiveTintColor,
   },
 });
 

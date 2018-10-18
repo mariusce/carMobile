@@ -110,6 +110,8 @@ export default {
   brandWarning: "#f0ad4e",
   brandDark: "#000",
   brandLight: "#f4f4f4",
+  activeTintColor: '#f0edf6',
+  inactiveTintColor: '#92c5c1',
 
   //Container
   containerBgColor: "#fff",

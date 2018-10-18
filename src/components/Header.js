@@ -32,7 +32,7 @@ class _Header extends Component {
           <Left style={styles.left}>
             {this.props.showBack &&
             <Button onPress={this._onPressBackButton} transparent>
-              <Feather name='arrow-left' color='#f0edf6' size={20}/>
+              <Feather name='arrow-left' color={platform.activeTintColor} size={20}/>
             </Button>
             }
           </Left>
@@ -42,7 +42,7 @@ class _Header extends Component {
           <Right>
             {this.props.showLogout &&
               <Button onPress={this._onPressLogoutButton} transparent>
-                <Feather name='power' color='#f0edf6' size={20}/>
+                <Feather name='power' color={platform.activeTintColor} size={20}/>
               </Button>
             }
           </Right>
