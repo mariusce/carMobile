@@ -34,7 +34,8 @@ class CodeValidation extends Component {
         Toast.show({
           text: errorCodeToText(json),
           buttonText: "Okay",
-          type: "danger"
+          type: "danger",
+          duration: 3000
         });
       }
     }));

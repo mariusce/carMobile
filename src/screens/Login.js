@@ -34,7 +34,8 @@ class Login extends Component {
         Toast.show({
           text: errorCodeToText(json),
           buttonText: "Okay",
-          type: "danger"
+          type: "danger",
+          duration: 3000
         });
       }
     }));
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     margin: 10
   },
   item: {
-    paddingTop: 20,
+    paddingTop: 10,
   }
 });
 
