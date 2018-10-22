@@ -7,12 +7,10 @@ import {
   View,
   Text,
   Flatlist,
-  StyleProvider,
-  Icon,
   Button,
   List, ListItem,
   Left,
-  Thumbnail, Body, Right,
+  Thumbnail, Body,
 } from "native-base";
 import {connect} from 'react-redux';
 import Header from '../components/Header';
@@ -25,14 +23,22 @@ class Contacts extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
+    this.state =  {
       isModalVisible: false,
       contactIndex: 0
     };
   }
 
   componentDidMount() {
-    this.props.dispatch(getUsers());
+    let query = undefined;
+    this.props.contactIds.forEach(function (contact) {
+      if (!query) { query = '?'; }
+      query = query.concat('carNumber[$in]=' + contact, '&');
+    });
+    if (query) {
+      query.slice(0, -1); // remove last &
+      this.props.dispatch(getUsers(query));
+    }
   }
 
   _toggleModal = (index) => {
@@ -61,7 +67,7 @@ class Contacts extends Component {
     });
     let contactModal = [];
     if (this.props && this.props.contacts && this.props.contacts.length > 0) {
-      let currentContact = this.props.contacts[0];
+      let currentContact = this.props.contacts[this.state.contactIndex];
       contactModal   =
             <Modal
               isVisible={this.state.isModalVisible}
@@ -149,8 +155,10 @@ function mapStateToProps(state) {
     data,
     isFetching
   } = state.users;
+  const contactIds = state.authentication.user.contacts;
   return {
     contacts: data || [],
+    contactIds: contactIds,
     isFetching
   };
 }

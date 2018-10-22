@@ -1,4 +1,3 @@
-import {LOGOUT} from './authentication';
 
 export const INIT_DONE = 'persist/REHYDRATE';
 export const SET_LOADING = 'SET_LOADING';

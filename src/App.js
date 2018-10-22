@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {SwitchNavigator, createStackNavigator} from "react-navigation";
+import {createSwitchNavigator, createStackNavigator} from "react-navigation";
 import {createMaterialBottomTabNavigator} from 'react-navigation-material-bottom-tabs';
 import {Root, StyleProvider} from "native-base";
 import getTheme from '../native-base-theme/components';
@@ -17,7 +17,6 @@ import {Provider} from 'react-redux';
 import Home from './screens/Home';
 import Contacts from './screens/Contacts';
 import Messages from './screens/Messages';
-import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const AuthStack = createStackNavigator(
@@ -70,7 +69,7 @@ const AppNavigator = createMaterialBottomTabNavigator({
 
 
 
-const AppSwitchNavigator = SwitchNavigator(
+const AppSwitchNavigator = createSwitchNavigator(
   {
     Loading: Loading,
     App: AppNavigator,
