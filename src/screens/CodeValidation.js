@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet} from 'react-native';
-import {Content, Button, Text, Item, Input, Label, StyleProvider, Toast} from 'native-base';
+import {Content, Button, Text, Item, Input, Label, StyleProvider, Toast, Icon} from 'native-base';
 import Container from '../components/Container';
 import PropTypes from 'prop-types';
 import {login} from '../actions/authentication'
@@ -46,10 +46,11 @@ class CodeValidation extends Component {
       <Container>
         <Header {...this.props} showLogout={false} title={this.props.headerTitle}/>
         <Content contentContainerStyle={styles.content}>
-          <Item style={styles.item} floatingLabel>
-            <Label>Validation Code</Label>
-            <Input onChangeText={text => this._onChangeTextInput('code', text)} returnKeyType='done' keyboardType="number-pad"
-                   placeholder=""/>
+          <Item rounded>
+            <Icon type="Ionicons" active name='key' />
+            <Input onChangeText={text => this._onChangeTextInput('code', text)}
+                   returnKeyType='done' keyboardType="number-pad" secureTextEntry={true}
+                   placeholder="validation code"/>
           </Item>
         </Content>
         <Button full style={styles.button} onPress={this._onPressSendValidate}>
@@ -77,9 +78,6 @@ const styles = StyleSheet.create({
   },
   button: {
     margin: 10
-  },
-  item: {
-    paddingTop: 20,
   }
 });
 

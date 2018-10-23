@@ -14,7 +14,7 @@ export function login(data, cb) {
 
 export function register(data, cb) {
     return function (dispatch, getState) {
-        return callApi(dispatch, getState, 'POST', '/users', data, REGISTER, cb);
+        return callApi(dispatch, getState, 'POST', '/users?type=user', data, REGISTER, cb);
     }
 }
 

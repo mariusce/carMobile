@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet} from 'react-native';
-import {Content, Button, Text, Item, Input, Label, StyleProvider, Toast} from 'native-base';
+import {Content, Button, Text, Item, Input, Label, StyleProvider, Toast, Icon} from 'native-base';
 import Container from '../components/Container';
 import PropTypes from 'prop-types';
 import {onChangeTextInput} from '../helpers/input';
@@ -45,13 +45,14 @@ class Login extends Component {
     return (
       <Container>
         <Content contentContainerStyle={styles.content}>
-          <Item style={styles.item} floatingLabel>
-              <Label>Car number</Label>
-              <Input onChangeText={text => this._onChangeTextInput('carNumber', text)} placeholder=""/>
+          <Item rounded>
+            <Icon type="Ionicons" active name='car' />
+            <Input onChangeText={text => this._onChangeTextInput('carNumber', text)} placeholder="license plate"/>
           </Item>
-          <Item style={styles.item} floatingLabel>
-            <Label>Password</Label>
-            <Input onChangeText={text => this._onChangeTextInput('password', text)} placeholder=""/>
+          <Text/>
+          <Item rounded>
+            <Icon type="Ionicons" active name='key' />
+            <Input onChangeText={text => this._onChangeTextInput('password', text)} secureTextEntry={true} placeholder="password"/>
           </Item>
         </Content>
         <Button full style={styles.button} onPress={this._onPressSignInButton}>
@@ -77,9 +78,6 @@ const styles = StyleSheet.create({
   },
   button: {
     margin: 10
-  },
-  item: {
-    paddingTop: 10,
   }
 });
 

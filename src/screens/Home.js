@@ -1,20 +1,31 @@
 import React, {Component} from 'react';
 import {StyleSheet, Image} from 'react-native';
-import {Container, Content, View, Text, Flatlist, StyleProvider, Icon, Button, Badge, Thumbnail,} from "native-base";
+import {
+  Container,
+  Content,
+  View,
+  Text,
+  Flatlist,
+  Thumbnail,
+  Toast,
+} from "native-base";
 import {connect} from 'react-redux';
 import Header from '../components/Header';
 import PropTypes from "prop-types";
-import {getAuthenticatedUser} from '../actions/authentication';
+import {getAuthenticatedUser, register} from '../actions/authentication';
 
 
 class Home extends Component {
 
   componentDidMount() {
-    this.props.dispatch(getAuthenticatedUser());
+    this.props.dispatch(getAuthenticatedUser((error, json) => {
+      if (error) {
+        this.props.navigation.navigate('Auth');
+      }
+    }));
   }
 
   render() {
-    let iconSize = 80;
     return (
       <Container>
         <Header {...this.props} title={this.props.headerTitle}/>

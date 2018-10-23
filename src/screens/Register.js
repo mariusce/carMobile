@@ -47,28 +47,32 @@ class Register extends Component {
     return (
       <Container>
         <Content contentContainerStyle={styles.content}>
-          <Item error={!this.state.carNumberValid} style={styles.item} floatingLabel>
-            <Label>Car number *</Label>
-            <Input onChangeText={text => this._onChangeTextInput('carNumber', text)} placeholder=""/>
-            {!this.state.carNumberValid && <Icon name='x-circle' />}
+          <Item error={!this.state.carNumberValid} rounded>
+            <Icon type="Ionicons" active name='car' />
+            <Input onChangeText={text => this._onChangeTextInput('carNumber', text)} placeholder="license plate *"/>
+            {!this.state.carNumberValid && <Icon type="Ionicons" name='close-circle' />}
           </Item>
-          <Item error={!this.state.passwordValid} style={styles.item} floatingLabel>
-            <Label>Password *</Label>
-            <Input type="password" onChangeText={text => this._onChangeTextInput('password', text)} placeholder=""/>
-            {!this.state.passwordValid && <Icon name='x-circle' />}
+          <Text/>
+          <Item error={!this.state.passwordValid} rounded>
+            <Icon type="Ionicons" active name='key' />
+            <Input type="password" onChangeText={text => this._onChangeTextInput('password', text)} secureTextEntry={true} placeholder="password *"/>
+            {!this.state.passwordValid && <Icon type="Ionicons" name='close-circle' />}
           </Item>
-          <Item style={styles.item} floatingLabel>
-            <Label>First Name</Label>
-            <Input onChangeText={text => this._onChangeTextInput('firstName', text)} placeholder=""/>
+          <Text/>
+          <Item rounded>
+            <Icon type="Ionicons" active name='contact' />
+            <Input onChangeText={text => this._onChangeTextInput('firstName', text)} placeholder="first name"/>
           </Item>
-          <Item style={styles.item} floatingLabel>
-            <Label>Last Name</Label>
-            <Input onChangeText={text => this._onChangeTextInput('lastName', text)} placeholder=""/>
+          <Text/>
+          <Item rounded>
+            <Icon type="Ionicons" active name='contact' />
+            <Input onChangeText={text => this._onChangeTextInput('lastName', text)} placeholder="last name"/>
           </Item>
-          <Item error={!this.state.emailValid} style={styles.item} floatingLabel>
-            <Label>Email</Label>
-            <Input type="email" onChangeText={text => this._onChangeTextInput('email', text)} placeholder=""/>
-            {!this.state.emailValid && <Icon name='x-circle' />}
+          <Text/>
+          <Item error={!this.state.emailValid} rounded>
+            <Icon type="Ionicons" active name='mail' />
+            <Input type="email" onChangeText={text => this._onChangeTextInput('email', text)} placeholder="email"/>
+            {!this.state.emailValid && <Icon type="Ionicons" name='close-circle' />}
           </Item>
         </Content>
         <Button full style={styles.button} onPress={this._onPressSignUpButton}>
@@ -94,9 +98,6 @@ const styles = StyleSheet.create({
   },
   button: {
     margin: 10
-  },
-  item: {
-    paddingTop: 20,
   },
   inputCarNumber: {
     textTransform: 'uppercase'

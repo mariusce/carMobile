@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet} from 'react-native';
-import {Content, Button, Text, Item, Input, Label, StyleProvider, Toast} from 'native-base';
+import {Content, Button, Text, Item, Input, Label, StyleProvider, Toast, Icon} from 'native-base';
 import Container from '../components/Container';
 import PropTypes from 'prop-types';
 import {sendAuthenticationCode} from '../actions/authentication';
@@ -38,10 +38,10 @@ class PhoneInput extends Component {
       <Container>
         <Header {...this.props} showLogout={false} title={this.props.headerTitle}/>
         <Content contentContainerStyle={styles.content}>
-          <Item style={styles.item} floatingLabel>
-            <Label>Phone Number</Label>
+          <Item rounded>
+            <Icon type="Ionicons" active name='phone-portrait' />
             <Input onChangeText={text => this._onChangeTextInput('phone', text)} value={this.state.phone}
-                   keyboardType="phone-pad" returnKeyType='done' placeholder=""/>
+                   keyboardType="phone-pad" returnKeyType='done' placeholder="phone"/>
           </Item>
         </Content>
         <Button full style={styles.button} onPress={this._onPressSendValidationCode}>
@@ -71,9 +71,6 @@ const styles = StyleSheet.create({
   button: {
     margin: 10
   },
-  item: {
-    paddingTop: 20,
-  }
 });
 
 function mapStateToProps(state) {
