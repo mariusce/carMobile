@@ -64,7 +64,6 @@ class Contacts extends Component {
 
     let query ='?carNumber[$in]=' + this.state.carNumber;
     this.props.dispatch(getUsers(query, (error, json) => {
-      console.log('get users response: ' + JSON.stringify(json));
       if (!error && json && json.total > 0) {
         let contacts = store.getState().authentication.user.contacts;
         contacts.push(this.state.carNumber);
@@ -139,7 +138,7 @@ class Contacts extends Component {
             <Text/><Text/>
             <Text>License plate</Text>
             <Text style={styles.propertyText}>{currentContact.carNumber}</Text>
-            <Text/><Text/>
+            <Text/>
             <Text>Full name</Text>
             <Text style={styles.propertyText}>{currentContact.firstName} {currentContact.lastName}</Text>
             <Text/><Text/><Text/><Text/>
@@ -163,7 +162,7 @@ class Contacts extends Component {
         animationIn="zoomIn"
         animationOut="zoomOut">
         <View style={styles.modalContent}>
-          <Item error={!this.state.carNumberValid} style={styles.item} rounded>
+          <Item error={!this.state.carNumberValid} rounded>
             <Icon type="Ionicons" active name='car' />
             <Input onChangeText={text => this._onChangeTextInput('carNumber', text)} placeholder="license plate"/>
             {!this.state.carNumberValid && <Icon type="Ionicons" name='close-circle' />}

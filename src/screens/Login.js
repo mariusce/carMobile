@@ -7,6 +7,7 @@ import {onChangeTextInput} from '../helpers/input';
 import {login} from '../actions/authentication'
 import {connect} from "react-redux";
 import {errorCodeToText} from '../helpers/utils';
+import {saveChatPassword} from '../actions/authentication';
 
 
 class Login extends Component {
@@ -29,6 +30,7 @@ class Login extends Component {
     };
     this.props.dispatch(login(data, (error, json) => {
       if (!error) {
+        this.props.dispatch(saveChatPassword(data.secret));
         this.props.navigation.navigate('App');
       } else {
         Toast.show({

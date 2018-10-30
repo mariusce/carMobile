@@ -1,5 +1,6 @@
 import {callApi} from '../api'
 
+export const CHAT = 'CHAT';
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
 export const REGISTER = 'REGISTER';
@@ -35,4 +36,11 @@ export function sendAuthenticationCode(phone, exist, cb) {
     return function (dispatch, getState) {
         return callApi(dispatch, getState, 'GET', `/authentication?type=user&phone=${phone}&exist=${exist}`, null, SEND_AUTHENTICATION_CODE, cb);
     }
+}
+
+export function saveChatPassword(chat) {
+  return {
+    type:  CHAT,
+    value: chat
+  }
 }
