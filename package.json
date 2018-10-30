@@ -26,7 +26,7 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^4.10.2",
     "redux-thunk": "^2.3.0",
-    "strophe.js": "^1.2.16",
+    "strophejs-plugins": "0.0.7",
     "xmldom": "^0.1.27"
   },
   "devDependencies": {

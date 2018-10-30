@@ -7,12 +7,12 @@ import PropTypes from "prop-types";
 import xmldom from 'xmldom';
 window.DOMParser = xmldom.DOMParser;
 window.document = new DOMParser().parseFromString("<?xml version='1.0'?>", 'text/xml');
-import 'strophe.js';
+import '../../lib/strophe.js/strophe.js';
+import {XMPP_DOMAIN, XMPP_WS_SERVICE_URI} from '../constants';
 import platform from '../../native-base-theme/variables/platform';
 import Feather from 'react-native-vector-icons/Feather';
 import Modal from "react-native-modal";
 import {onChangeTextInput} from '../helpers/input';
-import {XMPP_DOMAIN, XMPP_SERVICE_URI} from '../constants';
 import {store} from '../store/configureStore';
 import _ from 'lodash';
 
@@ -33,7 +33,9 @@ class Messages extends Component {
   }
 
   componentDidMount() {
-    connection = new Strophe.Connection(XMPP_SERVICE_URI);
+    connection = new Strophe.Connection(XMPP_WS_SERVICE_URI);
+    connection.rawInput = this._rawInput;
+    connection.rawOutput = this._rawOutput;
     const jid = _.toLower(store.getState().authentication.user.carNumber) + '@' + XMPP_DOMAIN;
     const password = store.getState().authentication.chat;
     connection.connect(jid, password, this._onConnect);

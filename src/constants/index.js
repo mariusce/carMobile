@@ -15,7 +15,8 @@ export const SHOW_ERROR = true;
 
 export const XMPP_PORT = '7070';
 export const XMPP_DOMAIN = 'marius.lan';
-export const XMPP_SERVICE_URI = 'ws://' + XMPP_DOMAIN + ':' + XMPP_PORT + '/ws/';
+export const XMPP_WS_SERVICE_URI = 'ws://' + XMPP_DOMAIN + ':' + XMPP_PORT + '/ws/';
+export const XMPP_HTTP_SERVICE_URI = 'http://' + XMPP_DOMAIN + ':' + XMPP_PORT + '/http-bind/';
 
 // eslint-disable-next-line
 export const EMAIL_REGEX = /^\w+([\.\-\!\#\$\%\&\‘\*\+\/\=\?\^\`\{\|\}\~]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
