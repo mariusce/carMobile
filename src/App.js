@@ -18,6 +18,7 @@ import Home from './screens/Home';
 import Contacts from './screens/Contacts';
 import Messages from './screens/Messages';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Chat from './screens/Chat';
 
 const AuthStack = createStackNavigator(
     {
@@ -74,6 +75,7 @@ const AppSwitchNavigator = createSwitchNavigator(
     Loading: Loading,
     App: AppNavigator,
     Auth: AuthStack,
+    Chat: Chat,
   },
   {
     initialRouteName: 'Loading',

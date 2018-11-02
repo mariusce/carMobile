@@ -1,23 +1,33 @@
 import React, {Component} from 'react';
-import {StyleSheet, Image, TextInput} from 'react-native';
-import {Container, Content, View, Text, StyleProvider, Icon, Button, Fab, Item, Input, Textarea, Form} from "native-base";
+import {StyleSheet, TextInput} from 'react-native';
+import {
+  Container,
+  Content,
+  View,
+  Text,
+  StyleProvider,
+  Icon,
+  Button,
+  Fab,
+  Item,
+  Input,
+  Textarea,
+  Form,
+  ListItem, Left, Right, Thumbnail, Body, List, Toast
+} from "native-base";
 import {connect} from 'react-redux';
 import Header from '../components/Header';
 import PropTypes from "prop-types";
-import xmldom from 'xmldom';
-window.DOMParser = xmldom.DOMParser;
-window.document = new DOMParser().parseFromString("<?xml version='1.0'?>", 'text/xml');
-import '../../lib/strophe.js/strophe.js';
-import {XMPP_DOMAIN, XMPP_WS_SERVICE_URI} from '../constants';
 import platform from '../../native-base-theme/variables/platform';
-import Feather from 'react-native-vector-icons/Feather';
 import Modal from "react-native-modal";
 import {onChangeTextInput} from '../helpers/input';
-import {store} from '../store/configureStore';
+import Feather from 'react-native-vector-icons/Feather';
 import _ from 'lodash';
-
-const Strophe = window.Strophe;
-let connection = null;
+import {store} from '../store/configureStore';
+import moment from 'moment';
+import {getUsers, updateUser} from '../actions/users';
+import {errorCodeToText} from '../helpers/utils';
+import {getAuthenticatedUser} from '../actions/authentication';
 
 class Messages extends Component {
 
@@ -33,16 +43,11 @@ class Messages extends Component {
   }
 
   componentDidMount() {
-    connection = new Strophe.Connection(XMPP_WS_SERVICE_URI);
-    connection.rawInput = this._rawInput;
-    connection.rawOutput = this._rawOutput;
-    const jid = _.toLower(store.getState().authentication.user.carNumber) + '@' + XMPP_DOMAIN;
-    const password = store.getState().authentication.chat;
-    connection.connect(jid, password, this._onConnect);
-  }
-
-  componentWillUnmount() {
-    connection.disconnect();
+    this.props.dispatch(getAuthenticatedUser((error, json) => {
+      if (error) {
+        this.props.navigation.navigate('Auth');
+      }
+    }));
   }
 
   _setModal = (visible) => {
@@ -51,110 +56,67 @@ class Messages extends Component {
     this.setState(state);
   };
 
-  _rawInput = (data) => {
-    console.log('RECV: ' + data);
-  };
-  _rawOutput = (data) => {
-    console.log('SENT: ' + data);
+  _goToChat = (carNumber) => {
+    this.props.navigation.navigate('Chat', {carNumber: carNumber});
   };
 
-  _sendMessage = (msg) => {
-    let m = $msg({
-      to: 'marius@marius.lan',
-      from: 'marius@marius.lan',
-      type: 'chat'
-    }).c("body").t(msg);
-    connection.send(m);
-  };
-
-  _onPressSendMessage = () => {
+  _onPressOpenChat = () => {
     let state = Object.assign({}, this.state);
     if (!this.state.carNumber || this.state.carNumber.length < 6) {
       state.carNumberValid = false;
       this.setState(state);
       return;
     }
-    let message = $msg({
-      to: _.toLower(this.state.carNumber) + '@' + XMPP_DOMAIN,
-      from: connection.jid,
-      type: 'chat'
-    }).c("body").t(this.state.message);
-    connection.send(message);
-    this._setModal(0);
-  };
-
-  _onMessage = (msg) => {
-    const to = msg.getAttribute('to');
-    const from = msg.getAttribute('from');
-    const type = msg.getAttribute('type');
-    const elems = msg.getElementsByTagName('body');
-
-    if (type === "chat" && elems.length > 0) {
-      let body = elems[0];
-      console.log('CHAT: I got a message from ' + from + ': ' + Strophe.getText(body));
-    }
-    // we must return true to keep the handler alive.
-    // returning false would remove it after it finishes.
-    return true;
-  };
-
-  _onSubscriptionRequest = (stanza) => {
-    if (stanza.type === "subscribe") {
-      var from = stanza.from;
-      // log('onSubscriptionRequest: from=' + from);
-      // Send a 'subscribed' notification back to accept the incoming
-      // subscription request
-      connection.send($pres({
-        to: from,
-        type: "subscribed"
-      }));
-    }
-    return true;
-  };
-
-  _onPresence = (presence) => {
-    // log('onPresence:');
-    var presence_type = presence.type; // unavailable, subscribed, etc...
-    var from = presence.from; // the jabber_id of the contact
-    if (!presence_type) presence_type = "online";
-    // log('	>' + from + ' --> ' + presence_type);
-    if (presence_type !== 'error') {
-      if (presence_type === 'unavailable') {
-        // Mark contact as offline
-      } else {
-        // var show = $(presence).find("show").text(); // this is what gives away, dnd, etc.
-        // if (show === 'chat' || show === '') {
-        //   // Mark contact as online
-        // } else {
-        //   // etc...
-        // }
+    let query ='?carNumber[$in]=' + this.state.carNumber;
+    this.props.dispatch(getUsers(query, (error, json) => {
+      if (!error && json && json.total > 0) {
+        this.props.navigation.navigate('Chat', {carNumber: this.state.carNumber});
       }
-    }
-    return true;
-  };
-
-  _onConnect = (status) => {
-    if (status === Strophe.Status.CONNECTING) {
-      console.log('Strophe is connecting.');
-    } else if (status === Strophe.Status.CONNFAIL) {
-      console.log('Strophe failed to connect.');
-    } else if (status === Strophe.Status.DISCONNECTING) {
-      console.log('Strophe is disconnecting.');
-    } else if (status === Strophe.Status.DISCONNECTED) {
-      console.log('Strophe is disconnected.');
-    } else if (status === Strophe.Status.CONNECTED) {
-      console.log('Strophe is connected.');
-      console.log('ECHOBOT: Send a message to ' + connection.jid +  ' to talk to me.');
-      // set presence
-      connection.send($pres());
-      // set handlers
-      connection.addHandler(this._onMessage, null, 'message', null, null,  null);
-      connection.addHandler(this._onSubscriptionRequest, null, "presence", "subscribe");
-      connection.addHandler(this._onPresence, null, "presence");
-    }
+      else if (!error && json && json.total === 0){
+        this._setModal(0);
+        Toast.show({
+          text: 'User not found!',
+          buttonText: "Okay",
+          type: "warning",
+          duration: 3000
+        });
+      }
+      else {
+        this._setModal(0);
+        Toast.show({
+          text: errorCodeToText(json),
+          buttonText: "Okay",
+          type: "danger",
+          duration: 3000
+        });
+      }
+    }));
   };
 
   render() {
+    let contacts = [];
+    this.props.contacts.forEach((contact, index) => {
+      if (contact) {
+        contacts.push(
+          <ListItem avatar key={'contact_' + index} onPress={() => {
+            this._goToChat(contact.carNumber);
+          }}>
+            <Left>
+              <Thumbnail source={{uri: 'https://picsum.photos/200/300/?image=73'}}/>
+            </Left>
+            <Body>
+            <Text style={styles.propertyText}>{contact.carNumber}</Text>
+            <Text>{contact.messages && (contact.messages.length > 0) && _.first(contact.messages).text}</Text>
+            </Body>
+            <Right>
+              <Text note>{contact && contact.messages && (contact.messages.length > 0) &&
+              moment(_.first(contact.messages).createdAt).fromNow()}</Text>
+            </Right>
+          </ListItem>
+        );
+      }
+    });
+
     let newMessageModal =
           <Modal
             isVisible={this.state.modalVisible === 1}
@@ -170,15 +132,9 @@ class Messages extends Component {
                 {!this.state.carNumberValid && <Icon type="Ionicons" name='close-circle' />}
               </Item>
               <Text/><Text/>
-              <View>
-                <TextInput style={styles.messageText}
-                  multiline = {true} numberOfLines = {2}
-                  onChangeText={text => this._onChangeTextInput('message', text)} placeholder="Hi! Your car is awesome!" />
-              </View>
-              <Text/><Text/>
               <View style={styles.message}>
-                <Button onPress={() => {this._onPressSendMessage()}}>
-                  <Text>send</Text>
+                <Button onPress={() => {this._onPressOpenChat()}}>
+                  <Text>chat</Text>
                 </Button>
               </View>
             </View>
@@ -189,6 +145,9 @@ class Messages extends Component {
       <Container>
         <Header {...this.props} title={this.props.headerTitle}/>
         <Content contentContainerStyle={styles.content}>
+          <List>
+            {contacts}
+          </List>
           <View style={styles.container}>
             {newMessageModal}
           </View>
@@ -221,7 +180,9 @@ Messages.defaultProps = {
 const styles = StyleSheet.create({
   content: {
     flex: 1,
-    margin: 10,
+  },
+  propertyText: {
+    fontWeight: 'bold'
   },
   container: {
     flex: 1,
@@ -247,7 +208,12 @@ const styles = StyleSheet.create({
 });
 
 function mapStateToProps(state) {
-  return {};
+  const data = state.authentication && state.authentication.user && state.authentication.user.contacts;
+  const isFetching = state.authentication && state.authentication.isFetching;
+  return {
+    contacts: data || [],
+    isFetching: isFetching
+  };
 }
 
 export default connect(mapStateToProps)(Messages);

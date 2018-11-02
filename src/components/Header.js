@@ -16,7 +16,11 @@ class _Header extends Component {
   }
 
   _onPressBackButton = () => {
-    this.props.navigation.goBack();
+    if (this.props.backTo) {
+      this.props.navigation.navigate(this.props.backTo);
+    } else {
+      this.props.navigation.goBack();
+    }
   };
 
   _onPressLogoutButton = () => {
@@ -29,10 +33,10 @@ class _Header extends Component {
     return (
       <StyleProvider style={getTheme(platform)}>
         <Header>
-          <Left style={styles.left}>
+          <Left >
             {this.props.showBack &&
             <Button onPress={this._onPressBackButton} transparent>
-              <Feather name='arrow-left' color={platform.activeTintColor} size={20}/>
+              <Feather name='arrow-left' color={platform.activeTintColor} size={30}/>
             </Button>
             }
           </Left>
@@ -56,12 +60,14 @@ _Header.propTypes = {
   title: PropTypes.string,
   showBack: PropTypes.bool,
   showLogout: PropTypes.bool,
+  backTo: PropTypes.string
 };
 
 _Header.defaultProps = {
   title: '',
   showBack: false,
-  showLogout: true
+  showLogout: true,
+  backTo: ''
 };
 
 const styles = StyleSheet.create({

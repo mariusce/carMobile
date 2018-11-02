@@ -5,7 +5,7 @@ import {
   Container, Content, Fab,
   View, Text, Flatlist, Icon,
   Button, List, ListItem,
-  Left, Thumbnail, Body, Label, Input, Item, Toast,
+  Left, Right, Thumbnail, Body, Label, Input, Item, Toast,
 } from "native-base";
 import {connect} from 'react-redux';
 import Header from '../components/Header';
@@ -16,6 +16,9 @@ import Feather from 'react-native-vector-icons/Feather';
 import {onChangeTextInput} from '../helpers/input';
 import {errorCodeToText} from '../helpers/utils';
 import {store} from '../store/configureStore';
+import _ from 'lodash';
+import moment from 'moment';
+import {getAuthenticatedUser} from '../actions/authentication';
 
 
 class Contacts extends Component {
@@ -28,23 +31,25 @@ class Contacts extends Component {
       carNumber: '',
       carNumberValid: true
     };
+    // this.contacts = [];
     this._onChangeTextInput = onChangeTextInput.bind(this);
   }
 
   componentDidMount() {
-    this._getContacts();
+    this._getAuthenticatedUser();
   }
 
-  _getContacts = () => {
-    let query = undefined;
-    store.getState().authentication.user.contacts.forEach(function (contact) {
-      if (!query) { query = '?'; }
-      query = query.concat('carNumber[$in]=' + contact, '&');
-    });
-    if (query) {
-      query.slice(0, -1); // remove last &
-      this.props.dispatch(getUsers(query));
-    }
+  _getAuthenticatedUser = () => {
+    this.props.dispatch(getAuthenticatedUser((error, json) => {
+      if (error) {
+        this.props.navigation.navigate('Auth');
+      }
+    }));
+  };
+
+  _goToChat = (carNumber) => {
+    this._setModal(0,0);
+    this.props.navigation.navigate('Chat', {carNumber: carNumber});
   };
 
   _setModal = (index, visible) => {
@@ -61,52 +66,51 @@ class Contacts extends Component {
       state.carNumberValid = false;
       this.setState(state); return;
     }
-
-    let query ='?carNumber[$in]=' + this.state.carNumber;
-    this.props.dispatch(getUsers(query, (error, json) => {
-      if (!error && json && json.total > 0) {
-        let contacts = store.getState().authentication.user.contacts;
-        contacts.push(this.state.carNumber);
-        this.props.dispatch(
-          updateUser({"contacts": contacts}, (error, json) => {
-              this._setModal(0,0);
-              this._getContacts();
+    let contacts = this.props && this.props.user && this.props.user.contacts;
+    let contactAlreadyAdded = _.find(contacts, {'carNumber': this.state.carNumber});
+    if (!contactAlreadyAdded && (this.props.user !== this.state.carNumber)) {
+      let query = '?carNumber[$in]=' + this.state.carNumber;
+      this.props.dispatch(getUsers(query, (error, json) => {
+        if (!error && json && json.total > 0) {
+          contacts.push({carNumber: this.state.carNumber});
+          this.props.dispatch(
+            updateUser({"contacts": contacts}, (error, json) => {
               if (error) {
                 Toast.show({
-                  text: errorCodeToText(json),
+                  text:       errorCodeToText(json),
                   buttonText: "Okay",
-                  type: "danger",
-                  duration: 3000
+                  type:       "danger",
+                  duration:   3000
                 });
-          }
-        }));
-      }
-      else if (!error && json && json.total === 0){
-        this._setModal(0,0);
-        this._getContacts();
-        Toast.show({
-          text: 'User not found!',
-          buttonText: "Okay",
-          type: "warning",
-          duration: 3000
-        });
-      }
-      else {
-        this._setModal(0,0);
-        this._getContacts();
-        Toast.show({
-          text: errorCodeToText(json),
-          buttonText: "Okay",
-          type: "danger",
-          duration: 3000
-        });
-      }
-    }));
+              } else {
+                this._getAuthenticatedUser();
+              }
+            }));
+        }
+        else if (!error && json && json.total === 0) {
+          Toast.show({
+            text:       'User not found!',
+            buttonText: "Okay",
+            type:       "warning",
+            duration:   3000
+          });
+        }
+        else {
+          Toast.show({
+            text:       errorCodeToText(json),
+            buttonText: "Okay",
+            type:       "danger",
+            duration:   3000
+          });
+        }
+      }));
+    }
+    this._setModal(0, 0);
   };
 
   render() {
     let contacts = [];
-    this.props.contacts.forEach((contact, index) => {
+    this.props && this.props.user && this.props.user.contacts.forEach((contact, index) => {
       contacts.push(
         <ListItem avatar key={'contact_' + index} onPress={() => {
           this._setModal(index, 1);
@@ -115,16 +119,20 @@ class Contacts extends Component {
             <Thumbnail source={{uri: 'https://picsum.photos/200/300/?image=73'}}/>
           </Left>
           <Body>
-            <Text>{contact.firstName} {contact.lastName}</Text>
-            <Text style={styles.propertyText}>{contact.carNumber}</Text>
+            <Text style={styles.propertyText}>{contact && contact.carNumber}</Text>
+            <Text >{'available'}</Text>
           </Body>
+          <Right>
+            <Text note>{contact && contact.messages && (contact.messages.length > 0) &&
+              moment(_.first(contact.messages).createdAt).fromNow()}</Text>
+          </Right>
         </ListItem>
       );
     });
 
     let viewContactModal = [];
-    if (this.props && this.props.contacts && this.props.contacts.length > 0) {
-      let currentContact = this.props.contacts[this.state.contactIndex];
+    if (this.props && this.props.user && this.props.user.contacts && this.props.user.contacts.length > 0) {
+      let currentContact = this.props.user.contacts[this.state.contactIndex];
       viewContactModal   =
         <Modal
           isVisible={this.state.modalVisible === 1}
@@ -138,15 +146,10 @@ class Contacts extends Component {
             <Text/><Text/>
             <Text>License plate</Text>
             <Text style={styles.propertyText}>{currentContact.carNumber}</Text>
-            <Text/>
-            <Text>Full name</Text>
-            <Text style={styles.propertyText}>{currentContact.firstName} {currentContact.lastName}</Text>
             <Text/><Text/><Text/><Text/>
             <View style={styles.message}>
-              <Button onPress={() => {
-                this._setModal(this.state.contactIndex, 0)
-              }}>
-                <Text>send message</Text>
+              <Button onPress={() => {this._goToChat(currentContact.carNumber)}}>
+                <Text>chat</Text>
               </Button>
             </View>
           </View>
@@ -244,13 +247,11 @@ const styles = StyleSheet.create({
 });
 
 function mapStateToProps(state) {
-  const {
-    data,
-    isFetching
-  } = state.users;
+  const data = state.authentication && state.authentication.user;
+  const isFetching = state.authentication && state.authentication.isFetching;
   return {
-    contacts: data || [],
-    isFetching
+    user: data || {},
+    isFetching: isFetching
   };
 }
 
