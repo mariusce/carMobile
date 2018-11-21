@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1068063609350",
+    "firebase_url": "https://car-mobile-1538664735844.firebaseio.com",
+    "project_id": "car-mobile-1538664735844",
+    "storage_bucket": "car-mobile-1538664735844.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068063609350:android:c6ca917c57c14b87",
+        "android_client_info": {
+          "package_name": "com.carmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1068063609350-7quc9mj57lmhp6bc26upo5gkfbnvqf8j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2ThkE0FHswC9CHmoFKg5ruIPtnpjZK_M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
