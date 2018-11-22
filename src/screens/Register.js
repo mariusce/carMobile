@@ -8,16 +8,16 @@ import {register, saveChatPassword} from '../actions/authentication'
 import {connect} from "react-redux";
 import {errorCodeToText} from '../helpers/utils';
 import {EMAIL_REGEX} from '../constants';
-import xmldom from 'xmldom';
-window.DOMParser = xmldom.DOMParser;
-window.document = new DOMParser().parseFromString("<?xml version='1.0'?>", 'text/xml');
-import '../../lib/strophe.js/strophe.js';
-import 'strophejs-plugins/register/strophe.register';
-import {XMPP_DOMAIN, XMPP_HTTP_SERVICE_URI} from '../constants';
-import _ from "lodash";
-
-const Strophe = window.Strophe;
-let connection = null;
+// import xmldom from 'xmldom';
+// window.DOMParser = xmldom.DOMParser;
+// window.document = new DOMParser().parseFromString("<?xml version='1.0'?>", 'text/xml');
+// import '../../lib/strophe.js/strophe.js';
+// import 'strophejs-plugins/register/strophe.register';
+// import {XMPP_DOMAIN, XMPP_HTTP_SERVICE_URI} from '../constants';
+// import _ from "lodash";
+//
+// const Strophe = window.Strophe;
+// let connection = null;
 
 
 class Register extends Component {
@@ -41,7 +41,7 @@ class Register extends Component {
 
     this.props.dispatch(register(this.state, (error, json) => {
       if (!error) {
-        this._registerToChatServer();
+        // this._registerToChatServer();
         this.props.dispatch(saveChatPassword(this.state.password));
         this.props.navigation.navigate('App');
       } else {
@@ -55,53 +55,53 @@ class Register extends Component {
     }));
   };
 
-  _registerToChatServer = () => {
-    const state = this.state;
-    connection = new Strophe.Connection(XMPP_HTTP_SERVICE_URI);
-    connection.rawInput = this._rawInput;
-    connection.rawOutput = this._rawOutput;
-    connection.register.connect(XMPP_DOMAIN, function (status) {
-      switch (status) {
-        case Strophe.Status.REGISTER:
-          connection.register.fields.username = _.toLower(state.carNumber);
-          connection.register.fields.password = state.password;
-          console.info("registering...");
-          connection.register.submit();
-          break;
-        case Strophe.Status.REGISTERED:
-          console.info("Registered!");
-          connection.disconnect();
-          break;
-        case Strophe.Status.CONFLICT:
-            console.error("Username already exists.");
-          break;
-        case Strophe.Status.NOTACCEPTABLE:
-            console.error("Registration form not properly filled out.");
-          break;
-        case Strophe.Status.REGIFAIL:
-          console.log("The Server does not support In-Band Registration");
-          break;
-        case Strophe.Status.CONNECTED:
-          console.info("Connected.");
-          break;
-        case Strophe.Status.DISCONNECTING:
-          console.log("Disconnecting...");
-          break;
-        case Strophe.Status.DISCONNECTED:
-          console.log("Disconnected.");
-          break;
-        default:
-          break;
-      }
-    }, 60, 1);
-  };
-
-  _rawInput = (data) => {
-    console.log('RECV: ' + data);
-  };
-  _rawOutput = (data) => {
-    console.log('SENT: ' + data);
-  };
+  // _registerToChatServer = () => {
+  //   const state = this.state;
+  //   connection = new Strophe.Connection(XMPP_HTTP_SERVICE_URI);
+  //   connection.rawInput = this._rawInput;
+  //   connection.rawOutput = this._rawOutput;
+  //   connection.register.connect(XMPP_DOMAIN, function (status) {
+  //     switch (status) {
+  //       case Strophe.Status.REGISTER:
+  //         connection.register.fields.username = _.toLower(state.carNumber);
+  //         connection.register.fields.password = state.password;
+  //         console.info("registering...");
+  //         connection.register.submit();
+  //         break;
+  //       case Strophe.Status.REGISTERED:
+  //         console.info("Registered!");
+  //         connection.disconnect();
+  //         break;
+  //       case Strophe.Status.CONFLICT:
+  //           console.error("Username already exists.");
+  //         break;
+  //       case Strophe.Status.NOTACCEPTABLE:
+  //           console.error("Registration form not properly filled out.");
+  //         break;
+  //       case Strophe.Status.REGIFAIL:
+  //         console.log("The Server does not support In-Band Registration");
+  //         break;
+  //       case Strophe.Status.CONNECTED:
+  //         console.info("Connected.");
+  //         break;
+  //       case Strophe.Status.DISCONNECTING:
+  //         console.log("Disconnecting...");
+  //         break;
+  //       case Strophe.Status.DISCONNECTED:
+  //         console.log("Disconnected.");
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //   }, 60, 1);
+  // };
+  //
+  // _rawInput = (data) => {
+  //   console.log('RECV: ' + data);
+  // };
+  // _rawOutput = (data) => {
+  //   console.log('SENT: ' + data);
+  // };
 
   render() {
     return (
