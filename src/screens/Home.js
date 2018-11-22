@@ -13,6 +13,7 @@ import {connect} from 'react-redux';
 import Header from '../components/Header';
 import PropTypes from "prop-types";
 import {getAuthenticatedUser, register} from '../actions/authentication';
+import * as firebase from 'react-native-firebase';
 
 
 class Home extends Component {
@@ -22,8 +23,31 @@ class Home extends Component {
       if (error) {
         this.props.navigation.navigate('Auth');
       }
+      this._getDeviceRegistrationToken();
+      this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
+        // Process your token as required
+      });
+
     }));
   }
+
+  componentWillUnmount() {
+    this.onTokenRefreshListener();
+  }
+
+
+  _getDeviceRegistrationToken = () => {
+    firebase.messaging().getToken()
+      .then(fcmToken => {
+        if (fcmToken) {
+          // user has a device token
+          console.log('got token: ' + JSON.stringify(fcmToken));
+        } else {
+          // user doesn't have a device token yet
+          console.log('the user has no device token ');
+        }
+      });
+  };
 
   render() {
     return (
