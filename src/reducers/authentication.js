@@ -1,4 +1,4 @@
-import { LOGIN, LOGOUT, GET_AUTHENTICATED_USER, REGISTER, CHAT } from '../actions/authentication';
+import { LOGIN, LOGOUT, GET_AUTHENTICATED_USER, REGISTER, CHAT, DOES_USER_EXIST} from '../actions/authentication';
 import {FLUSH_STATE, TOKEN_NOT_SET} from '../constants';
 import {parseJwt} from '../helpers/jwt'
 import _ from 'lodash';
@@ -35,6 +35,11 @@ export default function (state = INITIAL_STATE, action) {
           return Object.assign({}, state, INITIAL_STATE);
         case CHAT:
           return Object.assign({}, state, {chat: action.value});
+        case DOES_USER_EXIST:
+          if (action && action.value && action.value.accessToken) {
+            return Object.assign({}, state, {token: action.value.accessToken}, parseJwt(action.value.accessToken));
+          } else
+            return state;
         default:
             return state;
     }

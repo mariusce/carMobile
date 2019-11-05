@@ -1,0 +1,20 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+        "no-unused-vars": 2
+    },
+    "env": {
+        "node": true
+    },
+    "globals": {
+      "Promise": true,
+      "require": true
+    }
+}

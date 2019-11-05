@@ -36,7 +36,7 @@ const AuthStack = createStackNavigator(
 
 const AppNavigator = createMaterialBottomTabNavigator({
   Home: { screen: Home },
-  Contacts: { screen: Contacts },
+  // Contacts: { screen: Contacts },
   Messages: { screen: Messages },
 }, {
   initialRouteName: 'Home',
@@ -52,9 +52,9 @@ const AppNavigator = createMaterialBottomTabNavigator({
         case 'Home':
           iconName = 'home';
           break;
-        case 'Contacts':
-          iconName = 'people';
-          break;
+        // case 'Contacts':
+        //   iconName = 'people';
+        //   break;
         case 'Messages':
           iconName = 'forum';
           break;

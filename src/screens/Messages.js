@@ -28,6 +28,9 @@ import moment from 'moment';
 import {getUsers, updateUser} from '../actions/users';
 import {errorCodeToText} from '../helpers/utils';
 import {getAuthenticatedUser} from '../actions/authentication';
+import * as firebase from 'react-native-firebase';
+import {Notification, NotificationOpen} from "react-native-firebase";
+
 
 class Messages extends Component {
 
@@ -48,6 +51,34 @@ class Messages extends Component {
         this.props.navigation.navigate('Auth');
       }
     }));
+
+    // On notification received when App opened create notification and display it
+    this.removeNotificationListener = firebase.notifications().onNotification((notification: Notification) => {
+      // Process your notification as required
+      notification.android.setChannelId('message-channel')
+        .setNotificationId(notification.data.sender)
+        .setTitle('Car Mate')
+        .setBody(notification.data.message)
+        .setData({
+          sender: notification.data.sender,
+          message: notification.data.message
+        });
+      firebase.notifications().displayNotification(notification);
+    });
+    // Listen for a Notification being opened: App in Foreground and background
+    this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen: NotificationOpen) => {
+      // Get the action triggered by the notification being opened
+      const action = notificationOpen.action;
+      // Get information about the notification that was opened
+      const notification: Notification = notificationOpen.notification;
+      firebase.notifications().removeAllDeliveredNotifications(/*notification.data.sender*/);
+      this.props.navigation.navigate('Chat', {carNumber: _.toUpper(notification.data.sender)});
+    });
+  }
+
+  componentWillUnMount() {
+    this.removeNotificationListener();
+    this.notificationOpenedListener();
   }
 
   _setModal = (visible) => {

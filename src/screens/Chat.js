@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Image, TextInput, Platform} from 'react-native';
+import {StyleSheet, Image, TextInput, Platform, AppState} from 'react-native';
 import {
   Container,
   Content,
@@ -19,10 +19,11 @@ import {store} from '../store/configureStore';
 import _ from 'lodash';
 import {GiftedChat, Actions, Bubble, SystemMessage} from 'react-native-gifted-chat';
 import CustomView from '../../lib/chat/CustomView';
-import {updateUser} from '../actions/users';
+import {updateUser, getUsers} from '../actions/users';
 
 const Strophe = window.Strophe;
 let connection = null;
+let lastLength = 0;
 
 class Chat extends Component {
 
@@ -32,13 +33,18 @@ class Chat extends Component {
     this.friendHistory = {};
     this.carNumber = _.toLower(store.getState().authentication.user.carNumber);
     this.jid = this.carNumber + '@' + XMPP_DOMAIN;
-    this.password = store.getState().authentication.chat;
+    this.ejabberdPassword = store.getState().authentication.user.ejabberdPassword;
     this.contacts = store.getState().authentication.user.contacts;
+    this._handleAppStateChange = this._handleAppStateChange.bind(this);
+    this._getUserData = this._getUserData.bind(this);
+    this._updateUser = this._updateUser.bind(this);
     this.state =  {
       messages: [],
       loadEarlier: true,
       typingText: null,
       isLoadingEarlier: false,
+      appState: 'active',
+      appStateFocus: true
     };
     this._isMounted = false;
     this._isAlright = null;
@@ -46,35 +52,85 @@ class Chat extends Component {
 
   componentWillMount() {
     this._isMounted = true;
-    this.friendHistory = _.find(this.contacts, {'carNumber': this.friendCarNumber});
-    this.setState(() => {
-      return {
-        // messages: require('../../lib/chat/messages.js'),
-        messages: this.friendHistory && this.friendHistory.messages || []
-      };
-    });
   }
 
-  componentDidMount() {
+  _stropheConnect() {
     connection = new Strophe.Connection(XMPP_WS_SERVICE_URI);
     connection.rawInput = this._rawInput;
     connection.rawOutput = this._rawOutput;
-    connection.connect(this.jid, this.password, this._onConnect);
+    connection.connect(this.jid, this.ejabberdPassword, this._onConnect);
+  }
+
+  componentDidMount() {
+    AppState.addEventListener('change', this._handleAppStateChange);
+    this._stropheConnect();
+    // save messages once in 10 seconds
+    setInterval(() => { this._updateUser() }, 10000);
   }
 
   componentWillUnmount() {
+    AppState.removeEventListener('change', this._handleAppStateChange);
     connection.disconnect();
     this._isMounted = false;
-    let contacts = _.unionBy([{carNumber: this.friendCarNumber, messages: this.state.messages}], this.contacts, 'carNumber');
+  }
+
+  _getUserData() {
     this.props.dispatch(
-      updateUser({"contacts": contacts}, (error, json) => {
+      getUsers('/' + store.getState().authentication.userId, (error, user) => {
         if (error) {
-          console.log('Failed to save message history with ' + this.friendCarNumber);
+          console.log('Failed to get user data!');
         } else {
-          console.log('Saved message history with ' + this.friendCarNumber);
+          this.friendHistory = _.find(user.contacts, {'carNumber': this.friendCarNumber});
+          if (!this.friendHistory) {
+            this.friendHistory = {
+              carNumber: this.friendCarNumber,
+              messages:  []
+            };
+          }
+          this.setState(() => {
+            return {
+              // messages: require('../../lib/chat/messages.js'),
+              messages: this.friendHistory && this.friendHistory.messages || []
+            };
+          });
         }
       }));
   }
+
+  _updateUser() {
+    if (this.state.messages && this.state.messages.length > 0 && this.state.messages.length > lastLength) {
+      lastLength = this.state.messages.length;
+      this.friendHistory.messages = this.state.messages;
+
+      let contactToUpdateIndex = _.findIndex(this.contacts, {'carNumber': this.friendCarNumber});
+
+      if (contactToUpdateIndex === -1) {
+        this.contacts.push(this.friendHistory);
+      } else {
+        this.contacts[contactToUpdateIndex] = this.friendHistory;
+      }
+
+      this.props.dispatch(
+        updateUser({"contacts": this.contacts}, (error, json) => {
+          if (error) {
+            console.log('Failed to save message history with ' + this.friendCarNumber);
+          } else {
+            console.log('Saved message history with ' + this.friendCarNumber);
+          }
+        }));
+    }
+  }
+
+  _handleAppStateChange = (nextAppState) => {
+    if ((nextAppState === 'background' || nextAppState === 'inactive') && this.state.appState === 'active') {
+      connection.disconnect(); // disconnect strophe
+      console.log('App has become inactive!');
+    } else if ((this.state.appState === 'background' || this.state.appState === 'inactive') && nextAppState === 'active') {
+      this._stropheConnect();
+      console.log('App has come to the foreground!');
+    }
+    this.setState({appState: nextAppState});
+  };
 
   _rawInput = (data) => {
     console.log('RECV: ' + data);
@@ -88,6 +144,7 @@ class Chat extends Component {
     const from = msg.getAttribute('from');
     const type = msg.getAttribute('type');
     const elems = msg.getElementsByTagName('body');
+    const delay = msg.getAttribute('delay');
 
     if (type === "chat" && elems.length > 0) {
       const text = Strophe.getText(elems[0]);
@@ -121,7 +178,7 @@ class Chat extends Component {
     // log('	>' + from + ' --> ' + presence_type);
     if (presence_type !== 'error') {
       if (presence_type === 'unavailable') {
-        // Mark contact as offline
+        presence.type = 'offline';
       } else {
         // var show = $(presence).find("show").text(); // this is what gives away, dnd, etc.
         // if (show === 'chat' || show === '') {
@@ -143,9 +200,11 @@ class Chat extends Component {
       console.log('Strophe is disconnecting.');
     } else if (status === Strophe.Status.DISCONNECTED) {
       console.log('Strophe is disconnected.');
+      this._updateUser();
     } else if (status === Strophe.Status.CONNECTED) {
       console.log('Strophe is connected.');
       console.log('ECHOBOT: Send a message to ' + connection.jid +  ' to talk to me.');
+      this._getUserData();
       // set presence
       connection.send($pres());
       // set handlers
@@ -166,8 +225,7 @@ class Chat extends Component {
       if (this._isMounted === true) {
         this.setState((previousState) => {
           return {
-            // messages: GiftedChat.prepend(previousState.messages, require('../../lib/chat/messages.js')),
-            messages: GiftedChat.prepend(previousState.messages, this.friendHistory && this.friendHistory.messages || []),
+            messages: previousState.messages, //GiftedChat.prepend(previousState.messages, this.friendHistory && this.friendHistory.messages || []),
             loadEarlier: false,
             isLoadingEarlier: false,
           };
@@ -177,7 +235,6 @@ class Chat extends Component {
   };
 
   _onSend = (messages = []) => {
-    console.log('message to send: ' + JSON.stringify(messages));
     if (messages && messages.length > 0) {
       let stropheMessage = $msg({
         to:   _.toLower(this.friendCarNumber) + '@' + XMPP_DOMAIN,
@@ -203,8 +260,8 @@ class Chat extends Component {
           text: text,
           createdAt: new Date(),
           user: {
-            _id: this.friendCarNumber,
-            name: this.friendCarNumber,
+            _id: _.toUpper(this.friendCarNumber),
+            name: _.toUpper(this.friendCarNumber),
             // avatar: 'https://facebook.github.io/react/img/logo_og.png',
           },
         }),
