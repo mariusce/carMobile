@@ -23,13 +23,13 @@ import Modal from "react-native-modal";
 import {onChangeTextInput} from '../helpers/input';
 import Feather from 'react-native-vector-icons/Feather';
 import _ from 'lodash';
-import {store} from '../store/configureStore';
 import moment from 'moment';
-import {getUsers, updateUser} from '../actions/users';
+import {getUsers} from '../actions/users';
 import {errorCodeToText} from '../helpers/utils';
 import {getAuthenticatedUser} from '../actions/authentication';
 import * as firebase from 'react-native-firebase';
 import {Notification, NotificationOpen} from "react-native-firebase";
+import {Gravatar} from 'react-native-gravatar';
 
 
 class Messages extends Component {
@@ -56,8 +56,8 @@ class Messages extends Component {
     this.removeNotificationListener = firebase.notifications().onNotification((notification: Notification) => {
       // Process your notification as required
       notification.android.setChannelId('message-channel')
-        .setNotificationId(notification.data.sender)
-        .setTitle('Car Mate')
+        .setNotificationId(notification.notificationId)
+        .setTitle(notification.data.sender)
         .setBody(notification.data.message)
         .setData({
           sender: notification.data.sender,
@@ -101,7 +101,10 @@ class Messages extends Component {
     let query ='?carNumber[$in]=' + this.state.carNumber;
     this.props.dispatch(getUsers(query, (error, json) => {
       if (!error && json && json.total > 0) {
-        this.props.navigation.navigate('Chat', {carNumber: this.state.carNumber});
+        this.props.navigation.navigate('Chat', {
+          carNumber: this.state.carNumber,
+          email: json && json.data && json.data[0] && json.data[0].email
+        });
       }
       else if (!error && json && json.total === 0){
         this._setModal(0);
@@ -133,7 +136,12 @@ class Messages extends Component {
             this._goToChat(contact.carNumber);
           }}>
             <Left>
-              <Thumbnail source={{uri: 'https://picsum.photos/200/300/?image=73'}}/>
+              {/*<Thumbnail source={{uri: 'https://picsum.photos/200/300/?image=73'}}/>*/}
+              <Gravatar options={{
+                email: contact.email,
+                parameters: { "size": "100", "d": "mm" },
+                secure: true
+              }} style={styles.roundedProfileImage}/>
             </Left>
             <Body>
             <Text style={styles.propertyText}>{contact.carNumber}</Text>
@@ -235,6 +243,10 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 18,
+  },
+  roundedProfileImage: {
+    borderWidth:3,
+    borderColor:'white', borderRadius:50
   },
 });
 

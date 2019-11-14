@@ -52,9 +52,3 @@ export function sendAuthenticationCode(phone, exist, cb) {
     }
 }
 
-export function saveChatPassword(chat) {
-  return {
-    type:  CHAT,
-    value: chat
-  }
-}

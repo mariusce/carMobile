@@ -4,10 +4,11 @@ import {Content, Button, Text, Item, Input, Label, StyleProvider, Toast, Icon, V
 import Container from '../components/Container';
 import PropTypes from 'prop-types';
 import {onChangeTextInput} from '../helpers/input';
-import {register, saveChatPassword} from '../actions/authentication'
+import {register} from '../actions/authentication'
 import {connect} from "react-redux";
 import {errorCodeToText} from '../helpers/utils';
 import {EMAIL_REGEX} from '../constants';
+import _ from 'lodash';
 
 
 class Register extends Component {
@@ -39,8 +40,6 @@ class Register extends Component {
     let data = Object.assign({}, {carNumber: this.carNumber}, this.state);
     this.props.dispatch(register(data, (error, json) => {
       if (!error) {
-        // this._registerToChatServer();
-        this.props.dispatch(saveChatPassword(this.state.password));
         this.props.navigation.navigate('App');
       } else {
         Toast.show({
@@ -91,7 +90,7 @@ class Register extends Component {
           <Text/>
           <Item error={!this.state.emailValid} rounded>
             <Icon type="Ionicons" active name='mail' />
-            <Input type="email" onChangeText={text => this._onChangeTextInput('email', text)} placeholder="email *"/>
+            <Input type="email" onChangeText={text => this._onChangeTextInput('email', _.toLower(text))} placeholder="email *"/>
             {!this.state.emailValid && <Icon type="Ionicons" name='close-circle' />}
           </Item>
           <Text/>

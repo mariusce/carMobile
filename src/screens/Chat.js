@@ -30,6 +30,7 @@ class Chat extends Component {
   constructor(props) {
     super(props);
     this.friendCarNumber = this.props.navigation.getParam('carNumber');
+    this.friendEmail = this.props.navigation.getParam('email');
     this.friendHistory = {};
     this.carNumber = _.toLower(store.getState().authentication.user.carNumber);
     this.jid = this.carNumber + '@' + XMPP_DOMAIN;
@@ -69,6 +70,7 @@ class Chat extends Component {
   }
 
   componentWillUnmount() {
+    this._updateUser();
     AppState.removeEventListener('change', this._handleAppStateChange);
     connection.disconnect();
     this._isMounted = false;
@@ -101,6 +103,7 @@ class Chat extends Component {
     if (this.state.messages && this.state.messages.length > 0 && this.state.messages.length > lastLength) {
       lastLength = this.state.messages.length;
       this.friendHistory.messages = this.state.messages;
+      this.friendHistory.email = this.friendEmail;
 
       let contactToUpdateIndex = _.findIndex(this.contacts, {'carNumber': this.friendCarNumber});
 
