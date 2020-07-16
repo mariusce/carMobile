@@ -9,7 +9,7 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "buffer": "^5.2.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "moment": "^2.22.2",
     "native-base": "^2.8.1",
     "prop-types": "^15.6.2",
